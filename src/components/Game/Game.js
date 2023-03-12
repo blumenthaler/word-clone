@@ -6,11 +6,6 @@ import GuessInput from "../GuessInput/GuessInput";
 import GuessList from '../GuessList/GuessList';
 import Banner from "../Banner/Banner";
 
-// Pick a random word on every pageload.
-const answer = sample(WORDS);
-// To make debugging easier, we'll log the solution in the console.
-console.info({ answer });
-
 const isCorrectGuess = (guessArray) => {
     let correctLetters = []
     for (const letterData of guessArray) {
@@ -23,12 +18,19 @@ const isCorrectGuess = (guessArray) => {
 }
 
 function Game() {
+    const [answer, setAnswer] = React.useState(sample(WORDS))
     const [guesses, setGuesses] = React.useState([])
     const [userHasWon, setUserHasWon] = React.useState(false)
-    const [numOfAttempts, setNumOfAttempts] = React.useState(0)
     const [userHasLost, setUserHasLost] = React.useState(false)
+    const [numOfAttempts, setNumOfAttempts] = React.useState(0)
 
-    React.useEffect(() => {
+    React.useEffect(function logAnswer() {
+        console.groupCollapsed("Answer:")
+        console.log(answer)
+        console.groupEnd();
+    }, [answer])
+
+    React.useEffect(function determineGameOver() {
         if (guesses.length > 0 && !userHasWon && !userHasLost) {
             const foundWinningGuess = guesses?.find(guess => isCorrectGuess(guess))
 
@@ -42,9 +44,24 @@ function Game() {
         }
     }, [guesses])
 
+    const resetGame = () => {
+        setAnswer(sample(WORDS))
+        if (userHasWon) setUserHasWon(false)
+        if (userHasLost) setUserHasLost(false)
+        setGuesses([])
+        setNumOfAttempts(0)
+    }
+
+    const ResetBtn = () => (
+        <button onClick={resetGame}>Play again!</button>
+    )
+
     return (
         <>
             <GuessList guesses={guesses} setGuesses={setGuesses} />
+            {userHasWon || userHasLost ? (
+                <ResetBtn />
+            ) : null}
             <GuessInput 
                 guesses={guesses} 
                 setGuesses={setGuesses} 
