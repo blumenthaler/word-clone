@@ -1,15 +1,15 @@
 import React from "react";
 import { range } from "../../utils";
 
-function Guess({ guess = "" }) {
+function Guess({ guess = [] }) {
     return (
         <p className="guess">
             {
-                guess ? 
+                guess && guess?.length > 0 ? 
                     <>
                         {
-                            guess.split("").map(letter => (
-                                <span key={crypto.randomUUID()} className="cell">{letter}</span>
+                            guess.map(guessData => (
+                                <span key={crypto.randomUUID()} className={`cell ${guessData.status}`}>{guessData?.letter}</span>
                             ))
                         }
                     </>
